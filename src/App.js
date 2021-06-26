@@ -1,24 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import { createStyles, makeStyles, theme } from '@material-ui/core/styles';
 
-function App() {
+import Navbar from './components/Navbar';
+
+import CreatePostPage from './pages/CreatePostPage';
+import LoginPage from './pages/LoginPage';
+import PostsPage from './pages/PostsPage';
+import Footer from './components/Footer';
+
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
+
+const useStyles = makeStyles(theme =>
+  createStyles({
+    root: {
+      background: 'skyblue',
+      height: '100vh'
+    },
+    footer: {
+      display: 'flex',
+      marginLeft: '100',
+      marginRight: 'auto'
+    }
+  }),
+);
+
+const App = () => {
+  const classes = useStyles();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className={classes.root}>
+        <Route exact path="/">
+          <Navbar />
+        </Route>
+        <Switch>
+          <Route exact path="/posts">
+            <Navbar />
+            <PostsPage />
+          </Route>
+          <Route exact path="/create">
+            <Navbar />
+            <CreatePostPage />
+          </Route>
+          <Route exact path="/login">
+            <LoginPage />
+          </Route>
+        </Switch>
+        <Footer className={classes.footer} />
+      </div>
+    </Router>
   );
 }
 
