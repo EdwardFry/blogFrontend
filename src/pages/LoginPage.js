@@ -55,7 +55,7 @@ const LoginPage = () => {
     }
 
     const postData = () => {
-        axios.post('http://localhost:5000/gettoken', {
+        axios.post('https://uropblogbackend.herokuapp.com/gettoken', {
             data: {
                 'username': username,
                 'password': password

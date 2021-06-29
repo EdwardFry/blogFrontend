@@ -74,7 +74,7 @@ const PostPage = (props) => {
     const params = useParams()
     
     const getPost = () => {
-        axios.get('http://localhost:5000/getpost', {
+        axios.get('https://uropblogbackend.herokuapp.com/getpost', {
             headers: {
                 'post_id': params.id
             }
@@ -94,7 +94,7 @@ const PostPage = (props) => {
     const updatePost = () => {
         const token = JSON.parse(localStorage.getItem("userData")).token
         const raw = convertToRaw(editorState.getCurrentContent())
-        axios.post('http://localhost:5000/update', {
+        axios.post('https://uropblogbackend.herokuapp.com/update', {
             headers: {
                 'x-access-token': `${token}`
             },
@@ -112,7 +112,7 @@ const PostPage = (props) => {
 
     const deletePost = () => {
         const token = JSON.parse(localStorage.getItem("userData")).token
-        axios.delete('http://localhost:5000/delete', 
+        axios.delete('https://uropblogbackend.herokuapp.com/delete', 
             {
                 data: {
                     'post_id': params.id,

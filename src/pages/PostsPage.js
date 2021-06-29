@@ -39,7 +39,7 @@ const PostsPage = () => {
     const [loadingState, setLoadingState] = useState(true)
 
     const getPosts = () => {
-        axios.get('http://localhost:5000/getposts')
+        axios.get('https://uropblogbackend.herokuapp.com/getposts')
             .then(function (response) {
             setPosts(response.data)
             setLoadingState(false)

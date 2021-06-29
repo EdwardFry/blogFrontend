@@ -58,7 +58,7 @@ const CreatePostPage = () => {
     const postData = () => {
         const token = JSON.parse(localStorage.getItem("userData")).token
         const raw = convertToRaw(editorState.getCurrentContent())
-        axios.post('http://localhost:5000/post', {
+        axios.post('https://uropblogbackend.herokuapp.com/post', {
             headers: {
                 'x-access-token': `${token}`
             },
