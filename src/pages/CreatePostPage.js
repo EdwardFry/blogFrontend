@@ -1,15 +1,11 @@
 
 import React, { useState } from 'react';
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState } from 'draft-js';
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { Container, Paper, Card, Button } from '@material-ui/core';
-import { convertToHTML } from 'draft-convert';
-import DOMPurify from 'dompurify';
+import { Editor as TextEditor} from "react-draft-wysiwyg";
+import { EditorState, convertToRaw } from 'draft-js';
+import { Container, Paper, Button, TextField, Typography } from '@material-ui/core';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-
-
-import { createStyles, makeStyles, theme } from '@material-ui/core/styles';
+import axios from 'axios';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 
 const useStyles = makeStyles(theme =>
@@ -18,13 +14,28 @@ const useStyles = makeStyles(theme =>
             marginTop: 100
         },
         paper: {
-            padding: '10px 60px'
+            padding: '40px 60px',
+            paddingBottom: 100
         },
         header: {
 
         },
+        title: {
+            width: '80%',
+            margin: '20px 0'
+        },
         textBox: {
-            border: "1px solid grey"
+            border: "2px solid lightgrey"
+        },
+        editorBox: {
+            padding: 20
+        },
+        button: {
+            marginTop: 50, 
+            height: 80,
+            fontSize: 18,
+            width: 200,
+            marginRight: 20
         }
     }),
 );
@@ -33,55 +44,83 @@ const CreatePostPage = () => {
     const classes = useStyles();
     const [editorState, setEditorState] = useState(
         () => EditorState.createEmpty(),
-    );
-    const [convertedContent, setConvertedContent] = useState();
-
-    const printState = () => {
-        console.log(editorState)
-    }
+    )
+    const [title, setTitle] = useState("")
 
     const handleEditorChange = (state) => {
         setEditorState(state);
-        convertContentToHTML();
     }
 
-    const convertContentToHTML = () => {
-        const contentHTML = convertToHTML(editorState)
-        setConvertedContent(contentHTML)
-        console.log(contentHTML)
+    const handleTitleChange = (e) => {
+        setTitle(e.target.value)
     }
 
-    const createMarkup = (html) => {
-        return {
-            __html: DOMPurify.sanitize(html)
-        }
+    const postData = () => {
+        const token = JSON.parse(localStorage.getItem("userData")).token
+        const raw = convertToRaw(editorState.getCurrentContent())
+        axios.post('http://localhost:5000/post', {
+            headers: {
+                'x-access-token': `${token}`
+            },
+            data: {
+                'title': title,
+                'raw': raw
+            }
+        })
+          .then(function (response) {
+            window.location.href=`/post/${response.data.post_id}`
+          })
+          .catch(function (error) {
+          });
     }
 
     return (
         <Container className={classes.root}>
-            <Paper elevation={8} className={classes.paper}>
+            <Paper className={classes.paper}>
                 <div className={classes.header}>
-                    <h1>Create a post</h1>
+                    <Typography variant="h4">Create a post</Typography>
                     <p>Today's date: 16th </p>
                 </div>
-
                 <Container>
-                    <div className="preview" dangerouslySetInnerHTML={createMarkup(convertedContent)}></div>
-                    <Editor
+                    <TextField 
+                        variant="outlined" 
+                        className={classes.title} 
+                        placeholder="Title"
+                        value={title}
+                        onChange={handleTitleChange}
+                        inputProps={{ maxLength: 120 }}
+                        required={true}
+                    />
+                    {/* <Editor
                         editorState={editorState}
                         toolbarClassName="toolbarClassName"
                         wrapperClassName={classes.textBox}
-                        editorClassName="editorClassName"
+                        editorClassName="editorClassName"  
+                        onChange={handleEditorChange}   
+                        readOnly = {true}
+                    /> */}
+                    <TextEditor 
+                        placeholder="Write your post here..."
+                        editorState={editorState}
+                        toolbarClassName="toolbarClassName"
+                        wrapperClassName={classes.textBox}
+                        editorClassName={classes.editorBox}
                         onEditorStateChange={handleEditorChange}
                     />
                     <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={printState}
+                        className={classes.button}
+                        variant="outlined"
+                        onClick={postData}
                     >
                         Save for later
                     </Button>
-                    <Button color="primary" variant="contained">Publish</Button>
+                    <Button
+                        className={classes.button}
+                        
+                        variant="outlined"
+                    >
+                        Publish
+                    </Button>
                 </Container>
             </Paper>
 
